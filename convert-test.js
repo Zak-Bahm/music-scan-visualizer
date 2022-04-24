@@ -12,10 +12,10 @@ for (const key in testData) {
                 y: dp.tsne_2
             },
             genre: {
-                id: dp.label
+                id: parseInt(dp.label)
             },
             info: {
-                id: dp.track
+                id: parseInt(dp.track)
             }
         };
 
