@@ -19,7 +19,8 @@ for (const key in testData) {
         //     "std_1": 22.0991428567,
         //     "std_2": 23.6134650244,
         //     "z_1": 0.9606066818,
-        //     "z_2": -0.2220920086
+        //     "z_2": -0.2220920086,
+        //     "track_file":"music\/blocSonic\/Bitbasic\/Meek\/Bitbasic_-_03_-_Stealth_Elk.mp3"
         // }
 
         const converted = {
@@ -35,7 +36,8 @@ for (const key in testData) {
             },
             info: {
                 artist: dp.artist_name,
-                title: dp.track_title
+                title: dp.track_title,
+                file: dp.track_file
             }
         };
 
