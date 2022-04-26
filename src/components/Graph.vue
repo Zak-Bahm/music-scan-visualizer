@@ -3,7 +3,7 @@
         <svg>
             <g v-for="(points, index) in dataPoints" :key="index">
                 <g v-if="selectedGenre === -1 || selectedGenre === index">
-                    <circle v-for="pt in points" :key="pt.info.id" :r="minRad"
+                    <circle v-for="pt in points" :key="pt.info.title" :r="minRad"
                         :cx="x(pt.location.x + (limit / 2))"
                         :cy="y(pt.location.y + (limit / 2))"
                         :data-info="JSON.stringify(pt)"
@@ -16,9 +16,11 @@
         </svg>
     </div>
     <div class="tooltip bg-dark pt-tooltip backdrop" ref="tooltip">
-        Song Id: {{ songId }}
+        Song Title: {{ songTitle }}
         <br />
-        Genre Id: {{ genreId }}
+        Artist Name: {{ artistName }}
+        <br />
+        Genre Name: {{ genreName }}
     </div>
     <div class="btn-list d-flex flex-column">
         <div class="backdrop d-flex flex-column">
@@ -43,15 +45,19 @@ import axios from 'axios';
 
 interface Loc {
     x: number,
-    y: number
+    y: number,
+    xDev: number,
+    yDev: number
 }
 interface DataPoint {
     location: Loc,
     genre: {
-        id: number
+        id: number,
+        name: string
     },
     info: {
-        id: number
+        artist: string,
+        title: string
     }
 }
 
@@ -64,6 +70,15 @@ const genreColors = [
     '#2a3195'
 ]
 
+const genreNames = [
+    'Electronic',
+    'Rock',
+    'Instrumental',
+    'Folk',
+    'Pop',
+    'Hip Hop'
+]
+
 // setup datapoints and defaults
 const dataPoints = ref<Array<DataPoint[]>>([[]]);
 const selectedGenre = ref(-1);
@@ -72,8 +87,9 @@ const selectedGenre = ref(-1);
 const tooltip = ref<Element | null>(null);
 const minRad = 3;
 const maxRad = 15;
-const songId = ref(0);
-const genreId = ref(0);
+const songTitle = ref('');
+const artistName = ref('');
+const genreName = ref('');
 
 // setup tooltip functions
 const mouseover = (e: any) => {
@@ -81,8 +97,9 @@ const mouseover = (e: any) => {
 
     // set values
     const dataInfo: DataPoint = JSON.parse(e.target.dataset.info);
-    songId.value = dataInfo.info.id;
-    genreId.value = dataInfo.genre.id;
+    songTitle.value = dataInfo.info.title;
+    genreName.value = dataInfo.genre.name;
+    artistName.value = dataInfo.info.artist;
 
     d3.select(e.target).transition().duration(200).attr('r', maxRad);
     d3.select(tooltip.value)
