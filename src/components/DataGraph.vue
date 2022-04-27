@@ -21,17 +21,7 @@
 
     <SongPlayer :playlist="musicPlaylist" @deleteSong="i => musicPlaylist.splice(i, 1)"/>
 
-    <div class="btn-list d-flex flex-column">
-        <div class="backdrop d-flex flex-column">
-            <h3>Genre Filtering:</h3>
-            <div>
-                <button v-for="(color, index) in genreColors" :key="color" class="btn btn-circle mx-1"
-                    :class="selectedGenre === index ? 'selected' : ''" :style="{ 'background-color': color }"
-                    :title="genreNames[index]" @click="selectedGenre = selectedGenre === index ? -1 : index">
-                </button>
-            </div>
-        </div>
-    </div>
+    <ActionList :selectedGenre="selectedGenre" @changeGenre="i => selectedGenre = i"/>
 </template>
 
 <script setup lang="ts">
@@ -41,6 +31,7 @@ import axios from 'axios';
 
 import { DataPoint } from "@/types/Graph";
 import SongPlayer from '@/components/SongPlayer.vue';
+import ActionList from "@/components/ActionList.vue";
 
 // inject needed globals
 const genreColors = inject<string[]>('genreColors');
