@@ -1,7 +1,52 @@
 <template>
-    <Graph></Graph>
+    <DataGraph></DataGraph>
 </template>
 
 <script setup lang="ts">
-import Graph from '@/components/Graph.vue'
+import { provide } from 'vue'
+import DataGraph from '@/components/DataGraph.vue'
+
+provide('genreColors', [
+    '#eed73f',
+    '#f39943',
+    '#f65d4e',
+    '#da3361',
+    '#a93583',
+    '#2a3195'
+]);
+
+provide('genreNames', [
+    'Electronic',
+    'Rock',
+    'Instrumental',
+    'Folk',
+    'Pop',
+    'Hip Hop'
+])
 </script>
+
+<style>
+.backdrop {
+    padding: 10px;
+    color: #fff;
+    border-radius: 15px;
+    border: 1px solid rgb(50 55 60);
+    box-shadow: transparent 0 0 0 3px, rgb(50 55 60) 0 6px 20px;
+    background-color: #212529;
+}
+
+.btn.btn-circle {
+    width: 30px;
+    height: 30px;
+    padding: 6px 0px;
+    border-radius: 15px;
+    border: none;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.42857;
+}
+
+.btn.btn-circle.selected {
+    border: 3px solid #fff;
+}
+</style>
