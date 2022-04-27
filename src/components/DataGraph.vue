@@ -1,6 +1,9 @@
 <template>
     <div class="bg-dark" id="graph">
-        <svg>
+        <div class="loading-spinner" :class="loading ? '' : 'fadeOut hide'">
+            <fa-icon icon="spinner" size="4x" class="spin"/>
+        </div>
+        <svg id="svg-graph" :class="loading ? 'hide' : 'fadeIn'">
             <g v-for="(name, index) in genreNames" :key="index" :id="name"
                 :class="selectedGenre != -1 && selectedGenre != index ? 'd-none' : ''"
             >
@@ -33,6 +36,7 @@
     />
 
     <ActionList
+        :class="loading ? 'off-right' : 'slideInRight'"
         :selectedGenre="selectedGenre" @changeGenre="i => selectedGenre = i"
         :standardDev="standardDev" @changeDev="i => standardDev = i"
     />
@@ -55,6 +59,7 @@ const genreNames = inject<string[]>('genreNames');
 const selectedGenre = ref(-1);
 const musicPlaylist = ref<DataPoint[]>([]);
 const standardDev = ref(3);
+const loading = ref(true);
 
 // setup tooltip values
 const minRad = 3;
@@ -122,7 +127,7 @@ const idHash = (d: DataPoint) => btoa(encodeURIComponent(d.info.title + d.info.a
 
 async function setupGraph() {
     // append the svg object to the body of the page
-    d3.select("svg")
+    d3.select("#svg-graph")
         .attr("width", width)
         .attr("height", height);
 
@@ -155,11 +160,15 @@ async function addDataPoints(src: string) {
             .attr("cx", x(data.location.x + (limit / 2)))
             .attr("cy", y(data.location.y + (limit / 2)))
             .attr("id", idHash(data))
-            .attr("data-info", JSON.stringify(data)).style("fill", genreColors[data.genre.id])
+            .attr("data-info", JSON.stringify(data))
+            .style("fill", genreColors[data.genre.id])
             .on("mouseover", mouseover)
             .on("mouseleave", mouseleave)
             .on("click", click);
     });
+
+    // indicate loading is complete
+    loading.value = false;
 }
 
 function showSongInfo(info: DataPoint) {
@@ -207,5 +216,19 @@ onMounted(async () => {
     position: absolute;
     bottom: 50px;
     left: 50px;
+}
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    color: #fff;
+    background-color: #212529;
+    align-items: center;
+    justify-content: center;
+    display: flex;
 }
 </style>

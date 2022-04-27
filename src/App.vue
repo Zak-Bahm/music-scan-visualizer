@@ -28,6 +28,12 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
 </script>
 
 <style>
+#body {
+    height: 100%;
+    background-color: #212529;
+    overflow: hidden;
+}
+
 .backdrop {
     padding: 10px;
     color: #fff;
@@ -48,7 +54,103 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
     line-height: 1.42857;
 }
 
-.icons > svg {
+.icons>svg {
     cursor: pointer
+}
+
+/* animations */
+.hide {
+    opacity: 0;
+}
+.off-right {
+    right: -500px;
+}
+.off-left {
+    left: -500px;
+}
+
+.spin {
+    animation-name: spin;
+    animation-duration: 500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fadeOut {
+    animation-name: fadeOut;
+    animation-duration: 1000ms;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.fadeIn {
+    animation-name: fadeIn;
+    animation-duration: 1000ms;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.slideInRight {
+    animation-name: slideInRight;
+    animation-duration: 500ms;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+}
+
+@keyframes slideInRight {
+    0% {
+        right: -500px;
+    }
+
+    100% {
+        right: 50px;
+    }
+}
+
+.slideInLeft {
+    animation-name: slideInLeft;
+    animation-duration: 500ms;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+}
+
+@keyframes slideInLeft {
+    0% {
+        left: -500px;
+    }
+
+    100% {
+        left: 50px;
+    }
 }
 </style>

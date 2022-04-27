@@ -1,23 +1,25 @@
 <template>
-    <div class="song-list d-flex flex-column" v-if="playlist.length > 0">
-        <div class="backdrop my-2 d-flex justify-content-between align-items-center" v-for="(song, index) in playlist"
-            :key="song.info.file"
-            :class="currentSong === index ? 'playing' : ''"
-        >
-            <button class="btn btn-circle mx-2" :title="song.genre.name"
-                :style="{ 'background-color': genreColors[song.genre.id] }">
-            </button>
-            <h5 class="m-0 mx-2 p-1 song-title">{{ song.info.title }}</h5>
-            <div class="mx-2">
-                <a :href="filePrefix + song.info.file"
-                    target="_blank" class="mx-2 link-light">
-                    <fa-icon icon="external-link" size="lg" />
-                </a>
-                <a @click="$emit('deleteSong', index)" class="mx-2 link-danger">
-                    <fa-icon icon="trash-can" size="lg" />
-                </a>
+    <div class="song-list d-flex flex-column" :class="playlist.length > 0 ? 'slideInLeft' : 'off-left'" >
+        <TransitionGroup name="list" tag="div">
+            <div class="backdrop my-2 d-flex justify-content-between align-items-center" v-for="(song, index) in playlist"
+                :key="song.info.file"
+                :class="currentSong === index ? 'playing' : ''"
+            >
+                <button class="btn btn-circle mx-2" :title="song.genre.name"
+                    :style="{ 'background-color': genreColors[song.genre.id] }">
+                </button>
+                <h5 class="m-0 mx-2 p-1 song-title">{{ song.info.title }}</h5>
+                <div class="mx-2">
+                    <a :href="filePrefix + song.info.file"
+                        target="_blank" class="mx-2 link-light">
+                        <fa-icon icon="external-link" size="lg" />
+                    </a>
+                    <a @click="$emit('deleteSong', index)" class="mx-2 link-danger">
+                        <fa-icon icon="trash-can" size="lg" />
+                    </a>
+                </div>
             </div>
-        </div>
+        </TransitionGroup>
         <div class="backdrop d-flex justify-content-between align-items-center icons my-2">
             <fa-icon icon="backward" size="2x" class="mx-3" @click="backward"/>
             <fa-icon v-if="playing" icon="pause" size="2x" class="mx-3" @click="pause"/>
@@ -107,5 +109,15 @@ function backward() {
     }
     div.playing .song-title {
         color: rgb(210, 233, 255);
+    }
+
+    .list-enter-active,
+    .list-leave-active {
+        transition: all 0.5s ease;
+    }
+    .list-enter-from,
+    .list-leave-to {
+        opacity: 0;
+        transform: translateX(-500px);
     }
 </style>
