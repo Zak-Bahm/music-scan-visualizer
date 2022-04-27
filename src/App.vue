@@ -48,10 +48,6 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
     line-height: 1.42857;
 }
 
-.btn.btn-circle.selected {
-    border: 3px solid #fff;
-}
-
 .icons > svg {
     cursor: pointer
 }

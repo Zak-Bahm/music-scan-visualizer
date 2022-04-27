@@ -4,7 +4,7 @@
             <h3>Standard Deviations:</h3>
             <div class="btn-group d-flex dev-btns" role="group" aria-label="Standard Deviation Selection">
                 <button v-for="index in 3" :key="index"
-                    :class="standardDev === index ? 'selectedDev' : ''"
+                    :class="standardDev === index ? 'selected-dev' : ''"
                     @click="$emit('changeDev', index)"
                     type="button" class="btn btn-dark"
                 >
@@ -14,12 +14,16 @@
         </div>
         <div class="backdrop my-2 d-flex flex-column">
             <h3>Genre Filtering:</h3>
-            <div v-for="(color, index) in genreColors" :key="color" class="d-flex align-items-center my-2">
-                <button class="btn btn-circle mx-2"
-                    :class="selectedGenre === index ? 'selected' : ''" :style="{ 'background-color': color }"
-                    :title="genreNames[index]" @click="changeGenres(index)">
+            <div v-for="(color, index) in genreColors" :key="color"
+                class="d-flex align-items-center my-2 genre-option"
+                :class="selectedGenre === index ? 'selected' : ''"
+                @click="changeGenres(index)"
+            >
+                <button class="btn btn-circle me-4"
+                    :style="{ 'background-color': color }"
+                    :title="genreNames[index]">
                 </button>
-                <h5 class="m-0 mx-2">{{ genreNames[index] }}</h5>
+                <h5 class="m-0">{{ genreNames[index] }}</h5>
             </div>
         </div>
     </div>
@@ -55,7 +59,22 @@ function changeGenres(index: number) {
     .dev-btns button {
         border-radius: 15px;
     }
-    .dev-btns button.selectedDev {
+    .dev-btns button.selected-dev {
         background-color: rgb(107 119 131);
+    }
+
+    .genre-option {
+        cursor: pointer;
+        border-radius: 15px;
+        color: rgb(107 119 131);
+    }
+    .genre-option:hover {
+        color: rgb(210, 233, 255);
+    }
+    .genre-option.selected {
+        color: rgb(210, 233, 255);
+    }
+    .genre-option.selected button.btn-circle {
+        border: 3px solid rgb(210, 233, 255);
     }
 </style>
