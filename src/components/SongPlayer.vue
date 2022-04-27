@@ -71,7 +71,9 @@ function play(change = false) {
 }
 function forward() {
     if (player.value === null) return;
-    if (currentSong.value + 1 === props.playlist.length) return;
+    if (currentSong.value + 1 >= props.playlist.length) {
+        currentSong.value = props.playlist.length - 1;
+    }
 
     currentSong.value++;
     play(true);
@@ -79,6 +81,9 @@ function forward() {
 function backward() {
     if (player.value === null) return;
     if (currentSong.value === 0) return;
+    if (currentSong.value + 1 >= props.playlist.length) {
+        currentSong.value = props.playlist.length - 1;
+    }
 
     currentSong.value--;
     play(true);
