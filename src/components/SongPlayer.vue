@@ -1,6 +1,6 @@
 <template>
     <div class="song-list d-flex flex-column" v-if="playlist.length > 0">
-        <div class="backdrop my-1 d-flex justify-content-between align-items-center" v-for="(song, index) in playlist"
+        <div class="backdrop my-2 d-flex justify-content-between align-items-center" v-for="(song, index) in playlist"
             :key="song.info.file"
             :class="currentSong === index ? 'playing' : ''"
         >
@@ -18,7 +18,7 @@
                 </a>
             </div>
         </div>
-        <div class="backdrop d-flex justify-content-between align-items-center icons">
+        <div class="backdrop d-flex justify-content-between align-items-center icons my-2">
             <fa-icon icon="backward" size="2x" class="mx-3" @click="backward"/>
             <fa-icon v-if="playing" icon="pause" size="2x" class="mx-3" @click="pause"/>
             <fa-icon v-else icon="play" size="2x" class="mx-3" @click="play"/>
@@ -92,6 +92,6 @@ function backward() {
 
 <style>
     div.playing {
-        border: 2px solid #fff;
+        box-shadow: rgb(210, 233, 255) 3px 3px 0px;
     }
 </style>

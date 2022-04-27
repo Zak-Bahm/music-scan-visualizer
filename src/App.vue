@@ -21,7 +21,7 @@ provide('genreNames', [
     'Instrumental',
     'Folk',
     'Pop',
-    'Hip Hop'
+    'Hip-Hop'
 ])
 
 provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchive-org/')
@@ -33,7 +33,7 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
     color: #fff;
     border-radius: 15px;
     border: 1px solid rgb(50 55 60);
-    box-shadow: transparent 0 0 0 3px, rgb(50 55 60) 0 6px 20px;
+    box-shadow: rgb(107 119 131) 3px 3px 0px;
     background-color: #212529;
 }
 

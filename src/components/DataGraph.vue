@@ -1,13 +1,12 @@
 <template>
     <div class="bg-dark" id="graph">
         <svg>
-            <g v-for="(points, index) in dataPoints" :key="index">
-                <g v-if="selectedGenre === -1 || selectedGenre === index">
-                    <circle v-for="pt in points" :key="pt.info.title" :r="minRad" :cx="x(pt.location.x + (limit / 2))"
-                        :cy="y(pt.location.y + (limit / 2))" :data-info="JSON.stringify(pt)"
-                        :style="`fill: ${genreColors[pt.genre.id]}`" @mouseover="mouseover" @mouseleave="mouseleave"
-                        @click="click"></circle>
-                </g>
+            <g v-for="(name, index) in genreNames" :key="index" :id="name"
+                :class="selectedGenre != -1 && selectedGenre != index ? 'd-none' : ''"
+            >
+                <g :id="name + 'FirstDev'"></g>
+                <g :id="name + 'SecondDev'" :class="standardDev >= 2 ? '' : 'd-none'"></g>
+                <g :id="name + 'ThirdDev'" :class="standardDev >= 3 ? '' : 'd-none'"></g>
             </g>
         </svg>
     </div>
@@ -21,7 +20,10 @@
 
     <SongPlayer :playlist="musicPlaylist" @deleteSong="i => musicPlaylist.splice(i, 1)"/>
 
-    <ActionList :selectedGenre="selectedGenre" @changeGenre="i => selectedGenre = i"/>
+    <ActionList
+        :selectedGenre="selectedGenre" @changeGenre="i => selectedGenre = i"
+        :standardDev="standardDev" @changeDev="i => standardDev = i"
+    />
 </template>
 
 <script setup lang="ts">
@@ -38,9 +40,9 @@ const genreColors = inject<string[]>('genreColors');
 const genreNames = inject<string[]>('genreNames');
 
 // setup datapoints and defaults
-const dataPoints = ref<Array<DataPoint[]>>([[]]);
 const selectedGenre = ref(-1);
 const musicPlaylist = ref<DataPoint[]>([]);
+const standardDev = ref(3);
 
 // setup tooltip values
 const tooltip = ref<Element | null>(null);
@@ -72,7 +74,7 @@ const click = (e: any) => {
 
     // set values
     const dataInfo: DataPoint = JSON.parse(e.target.dataset.info);
-    musicPlaylist.value.unshift(dataInfo);
+    musicPlaylist.value.push(dataInfo);
 }
 
 const mouseleave = (e: any) => {
@@ -112,10 +114,28 @@ async function addDataPoints(src: string) {
     data.data.split('\n').forEach(async (pt: string, i: number) => {
         if (pt === '') return;
 
-        const data = JSON.parse(pt);
-        let dataArray = dataPoints.value[data.genre.id];
-        if (typeof dataArray === 'undefined') dataPoints.value[data.genre.id] = [];
-        dataPoints.value[data.genre.id].push(data);
+        const data: DataPoint = JSON.parse(pt);
+
+        // determine proper group to place pt in
+        let selectStr = '#' + data.genre.name;
+        const maxDev = Math.max(
+            Math.abs(data.location.xDev),
+            Math.abs(data.location.yDev)
+        );
+        let devStr = selectStr + 'FirstDev';
+        if (maxDev > 1) devStr = selectStr + 'SecondDev';
+        if (maxDev > 2) devStr = selectStr + 'ThirdDev';
+        selectStr += ' ' + devStr;
+
+        // add data point using d3
+        d3.select(selectStr)
+            .append("circle").attr("r", minRad)
+            .attr("cx", x(data.location.x + (limit / 2)))
+            .attr("cy", y(data.location.y + (limit / 2)))
+            .attr("data-info", JSON.stringify(data)).style("fill", genreColors[data.genre.id])
+            .on("mouseover", mouseover)
+            .on("mouseleave", mouseleave)
+            .on("click", click);
     });
 }
 
