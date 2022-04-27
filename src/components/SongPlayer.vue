@@ -1,24 +1,35 @@
 <template>
-    <div class="song-list d-flex flex-column">
+    <div class="song-list d-flex flex-column" v-if="playlist.length > 0">
         <div class="backdrop my-1 d-flex justify-content-between align-items-center" v-for="(song, index) in playlist"
-            :key="song.info.file">
-            <button class="btn btn-circle mx-1" :title="song.genre.name"
+            :key="song.info.file"
+            :class="currentSong === index ? 'playing' : ''"
+        >
+            <button class="btn btn-circle mx-2" :title="song.genre.name"
                 :style="{ 'background-color': genreColors[song.genre.id] }">
             </button>
-            <h5 class="m-0 mx-1 p-1">{{ song.info.title }}</h5>
-            <a :href="'https://files.freemusicarchive.org/storage-freemusicarchive-org/' + song.info.file"
-                target="_blank" class="mx-1 link-light">
-                <fa-icon icon="external-link" size="lg" />
-            </a>
-            <a @click="$emit('deleteSong', index)" class="mx-1 link-danger">
-                <fa-icon icon="trash-can" size="lg" />
-            </a>
+            <h5 class="m-0 mx-2 p-1">{{ song.info.title }}</h5>
+            <div class="mx-2">
+                <a :href="filePrefix + song.info.file"
+                    target="_blank" class="mx-2 link-light">
+                    <fa-icon icon="external-link" size="lg" />
+                </a>
+                <a @click="$emit('deleteSong', index)" class="mx-2 link-danger">
+                    <fa-icon icon="trash-can" size="lg" />
+                </a>
+            </div>
         </div>
+        <div class="backdrop d-flex justify-content-between align-items-center icons">
+            <fa-icon icon="backward" size="2x" class="mx-3" @click="backward"/>
+            <fa-icon v-if="playing" icon="pause" size="2x" class="mx-3" @click="pause"/>
+            <fa-icon v-else icon="play" size="2x" class="mx-3" @click="play"/>
+            <fa-icon icon="forward" size="2x" class="mx-3" @click="forward" />
+        </div>
+        <audio class="d-none" ref="player"></audio>
     </div>
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { DataPoint } from "@/types/Graph";
 
 // define props
@@ -29,8 +40,53 @@ const props = defineProps<Props>();
 
 // inject needed globals
 const genreColors = inject<string[]>('genreColors');
-const genreNames = inject<string[]>('genreNames');
+const filePrefix = inject<string>('filePrefix');
 
-// setup ref to mutate
+// setup player functions
+const playing = ref(false);
+const currentSong = ref(-1);
+const player = ref<HTMLAudioElement | null>(null);
 
+function pause() {
+    if (player.value === null) return;
+    player.value.pause();
+    playing.value = false;
+}
+function play(change = false) {
+    if (player.value === null) return;
+
+    // set source for first time
+    if (currentSong.value < 0) {
+        currentSong.value = 0;
+        player.value.src = filePrefix + props.playlist[currentSong.value].info.file;
+    }
+
+    // set source if changing songs
+    if (change === true) {
+        player.value.src = filePrefix + props.playlist[currentSong.value].info.file;
+    }
+
+    player.value.play();
+    playing.value = true;
+}
+function forward() {
+    if (player.value === null) return;
+    if (currentSong.value + 1 === props.playlist.length) return;
+
+    currentSong.value++;
+    play(true);
+}
+function backward() {
+    if (player.value === null) return;
+    if (currentSong.value === 0) return;
+
+    currentSong.value--;
+    play(true);
+}
 </script>
+
+<style>
+    div.playing {
+        border: 2px solid #fff;
+    }
+</style>

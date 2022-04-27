@@ -23,6 +23,8 @@ provide('genreNames', [
     'Pop',
     'Hip Hop'
 ])
+
+provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchive-org/')
 </script>
 
 <style>
@@ -48,5 +50,9 @@ provide('genreNames', [
 
 .btn.btn-circle.selected {
     border: 3px solid #fff;
+}
+
+.icons > svg {
+    cursor: pointer
 }
 </style>
