@@ -133,7 +133,24 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
     }
 
     100% {
-        right: 50px;
+        right: 30px;
+    }
+}
+
+.slideOutRight {
+    animation-name: slideOutRight;
+    animation-duration: 500ms;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+}
+
+@keyframes slideOutRight {
+    0% {
+        right: 30px;
+    }
+
+    100% {
+        right: -500px;
     }
 }
 
@@ -150,7 +167,24 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
     }
 
     100% {
-        left: 50px;
+        left: 30px;
+    }
+}
+
+.slideOutLeft {
+    animation-name: slideOutLeft;
+    animation-duration: 500ms;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+}
+
+@keyframes slideOutLeft {
+    0% {
+        left: 30px;
+    }
+
+    100% {
+        left: -500px;
     }
 }
 </style>

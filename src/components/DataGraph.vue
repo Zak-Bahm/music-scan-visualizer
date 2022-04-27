@@ -1,4 +1,10 @@
 <template>
+    <div v-if="loading == false" class="backdrop hide-menu" @click="hideMenus = !hideMenus">
+        <h5 class="m-0">
+            {{ hideMenus ? 'Show' : 'Hide' }} Menus
+        </h5>
+    </div>
+
     <div class="bg-dark" id="graph">
         <div class="loading-spinner" :class="loading ? '' : 'fadeOut hide'">
             <fa-icon icon="spinner" size="4x" class="spin"/>
@@ -14,7 +20,7 @@
         </svg>
     </div>
     <!-- hover tooltip -->
-    <div class="tooltip bg-dark pt-tooltip backdrop" ref="hoverTooltip">
+    <div class="tooltip pt-tooltip backdrop" ref="hoverTooltip">
         Song Title: {{ hoverInfo.songTitle }}
         <br />
         Artist Name: {{ hoverInfo.artistName }}
@@ -22,7 +28,7 @@
         Genre Name: {{ hoverInfo.genreName }}
     </div>
     <!-- song tooltip -->
-    <div class="tooltip bg-dark pt-tooltip backdrop" ref="songTooltip">
+    <div class="tooltip pt-tooltip backdrop" ref="songTooltip">
         Song Title: {{ songInfo.songTitle }}
         <br />
         Artist Name: {{ songInfo.artistName }}
@@ -31,12 +37,13 @@
     </div>
 
     <SongPlayer
+        :class="hideMenus && musicPlaylist.length > 0 ? 'off-left slideOutLeft' : ''"
         :playlist="musicPlaylist" @deleteSong="i => deleteSong(i)"
         @selectedSong="i => showSongInfo(i)"
     />
 
     <ActionList
-        :class="loading ? 'off-right' : 'slideInRight'"
+        :class="determineActionClass()"
         :selectedGenre="selectedGenre" @changeGenre="i => selectedGenre = i"
         :standardDev="standardDev" @changeDev="i => standardDev = i"
     />
@@ -60,6 +67,7 @@ const selectedGenre = ref(-1);
 const musicPlaylist = ref<DataPoint[]>([]);
 const standardDev = ref(3);
 const loading = ref(true);
+const hideMenus = ref(false);
 
 // setup tooltip values
 const minRad = 3;
@@ -201,6 +209,18 @@ function showSongInfo(info: DataPoint | false) {
         .style("opacity", 1);
 }
 
+function determineActionClass() {
+    if (loading.value) {
+        return 'off-right';
+    }
+
+    if (hideMenus.value) {
+        return 'off-right slideOutRight'
+    }
+
+    return 'slideInRight'
+}
+
 onMounted(async () => {
     await setupGraph();
 })
@@ -217,14 +237,14 @@ onMounted(async () => {
 
 .btn-list {
     position: absolute;
-    bottom: 50px;
-    right: 50px;
+    bottom: 30px;
+    right: 30px;
 }
 
 .song-list {
     position: absolute;
-    bottom: 50px;
-    left: 50px;
+    bottom: 30px;
+    left: 30px;
 }
 
 .loading-spinner {
@@ -239,5 +259,12 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     display: flex;
+}
+
+.hide-menu {
+    cursor: pointer;
+    position: absolute;
+    top: 30px;
+    right: 30px;
 }
 </style>
