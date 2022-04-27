@@ -16,5 +16,10 @@ interface DataPoint {
         file: string
     }
 }
+interface Tooltip {
+    songTitle: string,
+    genreName: string,
+    artistName: string
+}
 
-export { Loc, DataPoint }
+export { Loc, DataPoint, Tooltip }

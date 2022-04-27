@@ -7,7 +7,7 @@
             <button class="btn btn-circle mx-2" :title="song.genre.name"
                 :style="{ 'background-color': genreColors[song.genre.id] }">
             </button>
-            <h5 class="m-0 mx-2 p-1">{{ song.info.title }}</h5>
+            <h5 class="m-0 mx-2 p-1 song-title">{{ song.info.title }}</h5>
             <div class="mx-2">
                 <a :href="filePrefix + song.info.file"
                     target="_blank" class="mx-2 link-light">
@@ -37,6 +37,7 @@ interface Props {
     playlist: DataPoint[]
 }
 const props = defineProps<Props>();
+const emit = defineEmits(['deleteSong', 'selectedSong'])
 
 // inject needed globals
 const genreColors = inject<string[]>('genreColors');
@@ -55,16 +56,23 @@ function pause() {
 function play(change = false) {
     if (player.value === null) return;
 
+    // selected song
+    let songInfo = props.playlist[currentSong.value];
+
     // set source for first time
     if (currentSong.value < 0) {
         currentSong.value = 0;
-        player.value.src = filePrefix + props.playlist[currentSong.value].info.file;
+        songInfo = props.playlist[currentSong.value];
+        player.value.src = filePrefix + songInfo.info.file;
     }
 
     // set source if changing songs
     if (change === true) {
-        player.value.src = filePrefix + props.playlist[currentSong.value].info.file;
+        player.value.src = filePrefix + songInfo.info.file;
     }
+
+    // emit new song
+    emit('selectedSong', songInfo);
 
     player.value.play();
     playing.value = true;
@@ -91,7 +99,13 @@ function backward() {
 </script>
 
 <style>
+    .song-title {
+        color: rgb(107 119 131);
+    }
     div.playing {
         box-shadow: rgb(210, 233, 255) 3px 3px 0px;
+    }
+    div.playing .song-title {
+        color: rgb(210, 233, 255);
     }
 </style>

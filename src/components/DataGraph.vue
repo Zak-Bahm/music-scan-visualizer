@@ -10,15 +10,27 @@
             </g>
         </svg>
     </div>
-    <div class="tooltip bg-dark pt-tooltip backdrop" ref="tooltip">
-        Song Title: {{ songTitle }}
+    <!-- hover tooltip -->
+    <div class="tooltip bg-dark pt-tooltip backdrop" ref="hoverTooltip">
+        Song Title: {{ hoverInfo.songTitle }}
         <br />
-        Artist Name: {{ artistName }}
+        Artist Name: {{ hoverInfo.artistName }}
         <br />
-        Genre Name: {{ genreName }}
+        Genre Name: {{ hoverInfo.genreName }}
+    </div>
+    <!-- song tooltip -->
+    <div class="tooltip bg-dark pt-tooltip backdrop" ref="songTooltip">
+        Song Title: {{ songInfo.songTitle }}
+        <br />
+        Artist Name: {{ songInfo.artistName }}
+        <br />
+        Genre Name: {{ songInfo.genreName }}
     </div>
 
-    <SongPlayer :playlist="musicPlaylist" @deleteSong="i => musicPlaylist.splice(i, 1)"/>
+    <SongPlayer
+        :playlist="musicPlaylist" @deleteSong="i => musicPlaylist.splice(i, 1)"
+        @selectedSong="i => showSongInfo(i)"
+    />
 
     <ActionList
         :selectedGenre="selectedGenre" @changeGenre="i => selectedGenre = i"
@@ -31,7 +43,7 @@ import { ref, onMounted, inject } from "vue";
 import * as d3 from "d3";
 import axios from 'axios';
 
-import { DataPoint } from "@/types/Graph";
+import { DataPoint, Tooltip } from "@/types/Graph";
 import SongPlayer from '@/components/SongPlayer.vue';
 import ActionList from "@/components/ActionList.vue";
 
@@ -45,32 +57,41 @@ const musicPlaylist = ref<DataPoint[]>([]);
 const standardDev = ref(3);
 
 // setup tooltip values
-const tooltip = ref<Element | null>(null);
 const minRad = 3;
 const maxRad = 15;
-const songTitle = ref('');
-const artistName = ref('');
-const genreName = ref('');
+const hoverTooltip = ref<Element | null>(null);
+const hoverInfo = ref<Tooltip>({
+    songTitle: '',
+    artistName: '',
+    genreName: ''
+});
+const songTooltip = ref<Element | null>(null);
+const prevSongId = ref('');
+const songInfo = ref<Tooltip>({
+    songTitle: '',
+    artistName: '',
+    genreName: ''
+});
 
 // setup tooltip functions
 const mouseover = (e: any) => {
-    if (tooltip.value === null) return;
+    if (hoverTooltip.value === null) return;
 
     // set values
     const dataInfo: DataPoint = JSON.parse(e.target.dataset.info);
-    songTitle.value = dataInfo.info.title;
-    genreName.value = dataInfo.genre.name;
-    artistName.value = dataInfo.info.artist;
+    hoverInfo.value.songTitle = dataInfo.info.title;
+    hoverInfo.value.genreName = dataInfo.genre.name;
+    hoverInfo.value.artistName = dataInfo.info.artist;
 
     d3.select(e.target).transition().duration(200).attr('r', maxRad);
-    d3.select(tooltip.value)
+    d3.select(hoverTooltip.value)
         .style("left", (d3.pointer(e)[0] + 10) + "px")
         .style("top", (d3.pointer(e)[1]) + "px")
         .style("opacity", 1);
 }
 
 const click = (e: any) => {
-    if (tooltip.value === null) return;
+    if (hoverTooltip.value === null) return;
 
     // set values
     const dataInfo: DataPoint = JSON.parse(e.target.dataset.info);
@@ -78,10 +99,10 @@ const click = (e: any) => {
 }
 
 const mouseleave = (e: any) => {
-    if (tooltip.value === null) return;
+    if (hoverTooltip.value === null) return;
     d3.select(e.target).transition().duration(200).attr('r', minRad);
 
-    d3.select(tooltip.value)
+    d3.select(hoverTooltip.value)
         .transition().duration(200).style("opacity", 0)
 }
 
@@ -97,6 +118,7 @@ const x = d3.scaleLinear()
 const y = d3.scaleLinear()
     .domain([0, 200])
     .range([0, height]);
+const idHash = (d: DataPoint) => btoa(encodeURIComponent(d.info.title + d.info.artist)).replace(/=/g, '');
 
 async function setupGraph() {
     // append the svg object to the body of the page
@@ -132,11 +154,33 @@ async function addDataPoints(src: string) {
             .append("circle").attr("r", minRad)
             .attr("cx", x(data.location.x + (limit / 2)))
             .attr("cy", y(data.location.y + (limit / 2)))
+            .attr("id", idHash(data))
             .attr("data-info", JSON.stringify(data)).style("fill", genreColors[data.genre.id])
             .on("mouseover", mouseover)
             .on("mouseleave", mouseleave)
             .on("click", click);
     });
+}
+
+function showSongInfo(info: DataPoint) {
+    if (songTooltip.value === null) return;
+
+    // reset point radius
+    if (prevSongId.value !== '') {
+        d3.select('#' + prevSongId.value).transition().duration(200).attr('r', minRad);
+    }
+
+    // set values
+    songInfo.value.songTitle = info.info.title;
+    songInfo.value.genreName = info.genre.name;
+    songInfo.value.artistName = info.info.artist;
+
+    prevSongId.value = idHash(info);
+    d3.select('#' + idHash(info)).transition().duration(200).attr('r', maxRad);
+    d3.select(songTooltip.value)
+        .style("left", (x(info.location.x + (limit / 2)) + 10) + "px")
+        .style("top", (y(info.location.y + (limit / 2))) + "px")
+        .style("opacity", 1);
 }
 
 onMounted(async () => {
