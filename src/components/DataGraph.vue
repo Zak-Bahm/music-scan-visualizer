@@ -31,7 +31,7 @@
     </div>
 
     <SongPlayer
-        :playlist="musicPlaylist" @deleteSong="i => musicPlaylist.splice(i, 1)"
+        :playlist="musicPlaylist" @deleteSong="i => deleteSong(i)"
         @selectedSong="i => showSongInfo(i)"
     />
 
@@ -171,12 +171,21 @@ async function addDataPoints(src: string) {
     loading.value = false;
 }
 
-function showSongInfo(info: DataPoint) {
+function deleteSong(index: number) {
+    musicPlaylist.value.splice(index, 1);
+}
+function showSongInfo(info: DataPoint | false) {
     if (songTooltip.value === null) return;
 
     // reset point radius
     if (prevSongId.value !== '') {
         d3.select('#' + prevSongId.value).transition().duration(200).attr('r', minRad);
+    }
+
+    // hide if false
+    if (info === false) {
+        d3.select(songTooltip.value).style("opacity", 0);
+        return;
     }
 
     // set values

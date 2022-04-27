@@ -1,6 +1,6 @@
 <template>
     <div class="song-list d-flex flex-column" :class="playlist.length > 0 ? 'slideInLeft' : 'off-left'" >
-        <TransitionGroup name="list" tag="div">
+        <TransitionGroup name="list" tag="div" v-if="playlist.length > 0">
             <div class="backdrop my-2 d-flex justify-content-between align-items-center" v-for="(song, index) in playlist"
                 :key="song.info.file"
                 :class="currentSong === index ? 'playing' : ''"
@@ -14,7 +14,7 @@
                         target="_blank" class="mx-2 link-light">
                         <fa-icon icon="external-link" size="lg" />
                     </a>
-                    <a @click="$emit('deleteSong', index)" class="mx-2 link-danger">
+                    <a @click="deleteSong(index)" class="mx-2 link-danger">
                         <fa-icon icon="trash-can" size="lg" />
                     </a>
                 </div>
@@ -81,9 +81,7 @@ function play(change = false) {
 }
 function forward() {
     if (player.value === null) return;
-    if (currentSong.value + 1 >= props.playlist.length) {
-        currentSong.value = props.playlist.length - 1;
-    }
+    if (currentSong.value + 1 >= props.playlist.length) return;
 
     currentSong.value++;
     play(true);
@@ -91,12 +89,33 @@ function forward() {
 function backward() {
     if (player.value === null) return;
     if (currentSong.value === 0) return;
-    if (currentSong.value + 1 >= props.playlist.length) {
-        currentSong.value = props.playlist.length - 1;
-    }
 
     currentSong.value--;
     play(true);
+}
+function deleteSong(index: number) {
+    if (player.value === null) return;
+    if (currentSong.value === index) {
+        pause();
+
+        // if deleting first and there are more songs increment
+        if (index === 0 && props.playlist.length > 1) {
+            currentSong.value++;
+        } else {
+            currentSong.value--;
+        }
+
+        // only assign src if available
+        const songInfo = props.playlist[currentSong.value];
+        if (typeof songInfo !== 'undefined') {
+            player.value.src = filePrefix + props.playlist[currentSong.value].info.file;
+            emit('selectedSong', songInfo);
+        } else {
+            emit('selectedSong', false);
+        }
+    }
+
+    emit('deleteSong', index);
 }
 </script>
 
