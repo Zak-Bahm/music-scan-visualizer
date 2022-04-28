@@ -12,8 +12,8 @@
             </div>
         </Transition>
         <div class="backdrop my-2">
-            <h3>Standard Deviations:</h3>
-            <div class="btn-group d-flex dev-btns" role="group" aria-label="Standard Deviation Selection">
+            <h3>Clustering View:</h3>
+            <div class="btn-group d-flex dev-btns" role="group" aria-label="Clustering View Selection">
                 <button v-for="index in 3" :key="index"
                     :class="standardDev === index ? 'selected-dev' : ''"
                     @click="$emit('changeDev', index)"
