@@ -1,8 +1,9 @@
 <template>
-    <div v-if="loading == false" class="backdrop hide-menu" @click="hideMenus = !hideMenus">
-        <h5 class="m-0">
-            {{ hideMenus ? 'Show' : 'Hide' }} Menus
-        </h5>
+    <div v-if="loading == false" class="hide-menu"
+        @click="hideMenus = !hideMenus" :title="hideMenus ? 'Show Menus' : 'Hide Menus'"
+    >
+        <fa-icon v-if="hideMenus" icon="minimize" size="2x"/>
+        <fa-icon v-else icon="maximize"  size="2x"/>
     </div>
 
     <div class="bg-dark" id="graph">
@@ -10,12 +11,14 @@
             <fa-icon icon="spinner" size="4x" class="spin"/>
         </div>
         <svg id="svg-graph" :class="loading ? 'hide' : 'fadeIn'">
-            <g v-for="(name, index) in genreNames" :key="index" :id="name"
-                :class="selectedGenres.indexOf(index) != -1 ? '' : 'd-none'"
-            >
-                <g :id="name + 'FirstDev'"></g>
-                <g :id="name + 'SecondDev'" :class="standardDev >= 2 ? '' : 'd-none'"></g>
-                <g :id="name + 'ThirdDev'" :class="standardDev >= 3 ? '' : 'd-none'"></g>
+            <g id="zoom">
+                <g v-for="(name, index) in genreNames" :key="index" :id="name"
+                    :class="selectedGenres.indexOf(index) != -1 ? '' : 'd-none'"
+                >
+                    <g :id="name + 'FirstDev'"></g>
+                    <g :id="name + 'SecondDev'" :class="standardDev >= 2 ? '' : 'd-none'"></g>
+                    <g :id="name + 'ThirdDev'" :class="standardDev >= 3 ? '' : 'd-none'"></g>
+                </g>
             </g>
         </svg>
     </div>
@@ -135,9 +138,16 @@ const idHash = (d: DataPoint) => btoa(encodeURIComponent(d.info.title + d.info.a
 
 async function setupGraph() {
     // append the svg object to the body of the page
-    d3.select("#svg-graph")
+    const svg = d3.select("#svg-graph")
         .attr("width", width)
         .attr("height", height);
+    const g = d3.select("#zoom");
+
+    const handleZoom = (e: any) => g.attr('transform', e.transform);
+    const zoom = d3.zoom().scaleExtent([1, 10])
+        .translateExtent([[0,0], [Infinity, Infinity]])
+        .on('zoom', handleZoom);
+    svg.call(zoom);
 
     await addDataPoints('../converted-data.jsonl');
 }
@@ -276,5 +286,12 @@ onMounted(async () => {
     position: absolute;
     top: 30px;
     right: 30px;
+    width: 50px;
+    height: 50px;
+    color: #fff;
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

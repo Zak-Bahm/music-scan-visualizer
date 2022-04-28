@@ -63,10 +63,10 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
     opacity: 0;
 }
 .off-right {
-    right: -500px;
+    right: -1000px;
 }
 .off-left {
-    left: -500px;
+    left: -1000px;
 }
 
 .spin {
@@ -129,7 +129,7 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
 
 @keyframes slideInRight {
     0% {
-        right: -500px;
+        right: -1000px;
     }
 
     100% {
@@ -150,7 +150,7 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
     }
 
     100% {
-        right: -500px;
+        right: -1000px;
     }
 }
 
@@ -163,7 +163,7 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
 
 @keyframes slideInLeft {
     0% {
-        left: -500px;
+        left: -1000px;
     }
 
     100% {
@@ -184,7 +184,7 @@ provide('filePrefix', 'https://files.freemusicarchive.org/storage-freemusicarchi
     }
 
     100% {
-        left: -500px;
+        left: -1000px;
     }
 }
 </style>

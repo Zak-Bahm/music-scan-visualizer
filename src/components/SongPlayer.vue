@@ -54,6 +54,9 @@ function pause() {
     if (player.value === null) return;
     player.value.pause();
     playing.value = false;
+
+    // hide info on pause
+    emit('selectedSong', false);
 }
 function play(change = false) {
     if (player.value === null) return;
