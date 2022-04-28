@@ -21,10 +21,10 @@
             </div>
         </TransitionGroup>
         <div class="backdrop d-flex justify-content-between align-items-center icons my-2">
-            <fa-icon icon="backward" size="2x" class="mx-3" @click="backward"/>
+            <fa-icon icon="backward-step" size="2x" class="mx-3" @click="backward"/>
             <fa-icon v-if="playing" icon="pause" size="2x" class="mx-3" @click="pause"/>
             <fa-icon v-else icon="play" size="2x" class="mx-3" @click="play"/>
-            <fa-icon icon="forward" size="2x" class="mx-3" @click="forward" />
+            <fa-icon icon="forward-step" size="2x" class="mx-3" @click="forward" />
         </div>
         <audio class="d-none" ref="player"></audio>
     </div>
@@ -113,6 +113,9 @@ function deleteSong(index: number) {
         } else {
             emit('selectedSong', false);
         }
+    } else if (currentSong.value > index) {
+        // decrement current song since list has been shortened
+        currentSong.value--;
     }
 
     emit('deleteSong', index);
@@ -122,6 +125,10 @@ function deleteSong(index: number) {
 <style>
     .song-title {
         color: rgb(107 119 131);
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     div.playing {
         box-shadow: rgb(210, 233, 255) 3px 3px 0px;

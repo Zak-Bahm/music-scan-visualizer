@@ -7,10 +7,10 @@ import { provide } from 'vue'
 import DataGraph from '@/components/DataGraph.vue'
 
 provide('genreColors', [
-    '#eed73f',
-    '#f39943',
-    '#f65d4e',
-    '#da3361',
+    '#bbcc33',
+    '#77aadd',
+    '#ee8866',
+    '#44bb99',
     '#a93583',
     '#2a3195'
 ]);

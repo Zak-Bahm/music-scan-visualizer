@@ -27,8 +27,8 @@
             <h3>Genre Filtering:</h3>
             <div v-for="(color, index) in genreColors" :key="color"
                 class="d-flex align-items-center my-2 genre-option"
-                :class="selectedGenre === index ? 'selected' : ''"
-                @click="changeGenres(index)"
+                :class="selectedGenres.indexOf(index) != -1 ? 'selected' : ''"
+                @click="$emit('toggleGenre', index)"
             >
                 <button class="btn btn-circle me-4"
                     :style="{ 'background-color': color }"
@@ -45,11 +45,11 @@ import { inject, ref, onMounted } from 'vue';
 
 // define props
 interface Props {
-    selectedGenre: number,
+    selectedGenres: number[],
     standardDev: number
 }
 const props = defineProps<Props>();
-const emit = defineEmits(['changeGenre', 'changeDev'])
+const emit = defineEmits(['toggleGenre', 'changeDev'])
 
 // inject needed globals
 const genreColors = inject<string[]>('genreColors');
@@ -61,14 +61,6 @@ const registration = ref();
 const updateExists = ref(false);
 
 // setup functions
-function changeGenres(index: number) {
-    let newGenre = index;
-    if (props.selectedGenre === index) {
-        newGenre = -1;
-    }
-
-    emit('changeGenre', newGenre);
-}
 
 // Listen for our custom event from the SW registration
 document.addEventListener('swUpdated', updateAvailable, { once: true })

@@ -11,7 +11,7 @@
         </div>
         <svg id="svg-graph" :class="loading ? 'hide' : 'fadeIn'">
             <g v-for="(name, index) in genreNames" :key="index" :id="name"
-                :class="selectedGenre != -1 && selectedGenre != index ? 'd-none' : ''"
+                :class="selectedGenres.indexOf(index) != -1 ? '' : 'd-none'"
             >
                 <g :id="name + 'FirstDev'"></g>
                 <g :id="name + 'SecondDev'" :class="standardDev >= 2 ? '' : 'd-none'"></g>
@@ -44,7 +44,7 @@
 
     <ActionList
         :class="determineActionClass()"
-        :selectedGenre="selectedGenre" @changeGenre="i => selectedGenre = i"
+        :selectedGenres="selectedGenres" @toggleGenre="i => toggleGenre(i)"
         :standardDev="standardDev" @changeDev="i => standardDev = i"
     />
 </template>
@@ -63,7 +63,7 @@ const genreColors = inject<string[]>('genreColors');
 const genreNames = inject<string[]>('genreNames');
 
 // setup datapoints and defaults
-const selectedGenre = ref(-1);
+const selectedGenres = ref<number[]>([0,1,2,3,4,5]);
 const musicPlaylist = ref<DataPoint[]>([]);
 const standardDev = ref(3);
 const loading = ref(true);
@@ -219,6 +219,16 @@ function determineActionClass() {
     }
 
     return 'slideInRight'
+}
+
+function toggleGenre(index: number) {
+    const listIndex = selectedGenres.value.indexOf(index);
+
+    if (listIndex == -1) {
+        selectedGenres.value.push(index);
+    } else {
+        selectedGenres.value.splice(listIndex, 1);
+    }
 }
 
 onMounted(async () => {
