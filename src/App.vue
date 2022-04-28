@@ -6,6 +6,8 @@
 import { provide } from 'vue'
 import DataGraph from '@/components/DataGraph.vue'
 
+document.title = 'Music Scan Visualizer';
+
 provide('genreColors', [
     '#bbcc33',
     '#77aadd',
