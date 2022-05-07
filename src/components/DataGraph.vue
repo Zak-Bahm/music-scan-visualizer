@@ -49,6 +49,7 @@
         :class="determineActionClass()"
         :selectedGenres="selectedGenres" @toggleGenre="i => toggleGenre(i)"
         :standardDev="standardDev" @changeDev="i => standardDev = i"
+        :zoomLevel="zoomLevel" @changeZoom="l => changeZoom(l)"
     />
 </template>
 
@@ -69,6 +70,7 @@ const genreNames = inject<string[]>('genreNames');
 const selectedGenres = ref<number[]>([0,1,2,3,4,5]);
 const musicPlaylist = ref<DataPoint[]>([]);
 const standardDev = ref(3);
+const zoomLevel = ref(1);
 const loading = ref(true);
 const hideMenus = ref(false);
 
@@ -143,7 +145,10 @@ async function setupGraph() {
         .attr("height", height);
     const g = d3.select("#zoom");
 
-    const handleZoom = (e: any) => g.attr('transform', e.transform);
+    const handleZoom = (e: any) => {
+        g.attr('transform', e.transform);
+        zoomLevel.value = e.transform.k;
+    };
     const zoom = d3.zoom().scaleExtent([1, 10])
         .translateExtent([[0,0], [Infinity, Infinity]])
         .on('zoom', handleZoom);
@@ -238,6 +243,20 @@ function toggleGenre(index: number) {
         selectedGenres.value.push(index);
     } else {
         selectedGenres.value.splice(listIndex, 1);
+    }
+}
+
+function changeZoom(level: number) {
+    zoomLevel.value = level;
+
+    const g = d3.select("#zoom");
+    const t = d3.zoomTransform(g.node());
+
+    g.attr("transform", `translate(${t.x}, ${t.y}) scale(${level})`);
+
+    // reset if 1
+    if (zoomLevel.value == 1) {
+        g.attr('transform', '');
     }
 }
 
